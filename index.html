@@ -2,183 +2,267 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Cell Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shared Cell Manager</title>
   <style>
-    body { margin:0; font-family:system-ui, -apple-system, BlinkMacSystemFont, sans-serif; background:#1c1c1c; color:#fff; }
-    header { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:#111; position:sticky; top:0; z-index:10; }
-    .menu { position:relative; }
-    .menu-btn { background:none; border:none; color:#fff; font-size:22px; }
-    .menu-content { display:none; position:absolute; right:0; top:28px; background:#2a2a2a; border-radius:8px; min-width:220px; box-shadow:0 4px 10px rgba(0,0,0,.6); }
-    .menu-content button { width:100%; padding:12px; background:none; border:none; color:#fff; text-align:left; font-size:15px; }
-    .menu-content button:hover { background:#3a3a3a; }
-    .toolbar { padding:12px; }
-    select { width:100%; padding:12px; border-radius:10px; border:none; font-size:16px; background:#3a5f3a; color:#fff; }
-    .grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:12px; }
-    .cell { background:#3a5f3a; border-radius:14px; padding:22px 0; text-align:center; font-size:18px; user-select:none; }
-    .cell.active { background:rgb(128, 5, 5); animation:blink 1s infinite; }
-    @keyframes blink { 0%,50%,100%{opacity:1} 25%,75%{opacity:.3} }
-    .pagination { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:#111; }
-    .pagination button { background:#00aa00; border:none; border-radius:20px; padding:10px 18px; font-size:15px; }
-    .ticker { background:#000; color:#ff5555; overflow:hidden; white-space:nowrap; padding:10px; font-size:14px; }
-    .ticker span { display:inline-block; padding-left:100%; animation:scroll 18s linear infinite; }
-    @keyframes scroll { from{transform:translateX(0)} to{transform:translateX(-100%)} }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #1c1c1c;
+      color: #fff;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: #111;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .menu { position: relative; }
+    .menu-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 22px;
+    }
+
+    .menu-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 30px;
+      background: #2a2a2a;
+      border-radius: 6px;
+      min-width: 160px;
+    }
+
+    .menu-content button {
+      width: 100%;
+      padding: 10px;
+      background: none;
+      border: none;
+      color: #fff;
+      text-align: left;
+    }
+
+    .menu-content button:hover { background: #3a3a3a; }
+
+    select {
+      background: #2a2a2a;
+      color: #fff;
+      border: none;
+      padding: 6px;
+      border-radius: 4px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 16px;
+    }
+
+    .cell {
+      background: #3a5f3a;
+      border-radius: 8px;
+      padding: 20px 0;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .cell.active {
+      background: red;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity:1; }
+      50% { opacity:0.3; }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding-bottom: 70px;
+    }
+
+    button {
+      background: #00aa00;
+      color: #000;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+    }
+
+    .ticker {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #000;
+      color: #0f0;
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 8px 0;
+    }
+
+    .ticker span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: scroll 15s linear infinite;
+    }
+
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-100%); }
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <div id="deptTitle">Select Department</div>
-  <div class="menu">
-    <button class="menu-btn" id="menuBtn">⋮</button>
-    <div class="menu-content" id="menuContent">
-      <button id="addDept">Add Department</button>
-      <button id="renameDept">Rename Department</button>
-      <button id="renameCell">Rename Selected Cell</button>
-      <button id="resetAll">Reset All</button>
-    </div>
+  <div id="deptTitle">Department</div>
+  <div>
+    <select id="deptSelect"></select>
+    <span class="menu">
+      <button class="menu-btn" id="menuBtn">⋮</button>
+      <div class="menu-content" id="menuContent">
+        <button id="addDept">Add Department</button>
+        <button id="renameDept">Rename Department</button>
+        <button id="renameCell">Rename Cell</button>
+        <button id="resetAll">Reset All</button>
+      </div>
+    </span>
   </div>
 </header>
-
-<div class="toolbar">
-  <select id="departmentSelect"></select>
-</div>
 
 <div class="grid" id="grid"></div>
 
 <div class="pagination">
-  <button id="prevPage">Prev</button>
+  <button id="prev">Prev</button>
   <span id="pageInfo"></span>
-  <button id="nextPage">Next</button>
+  <button id="next">Next</button>
 </div>
 
-<div class="ticker"><span id="tickerText"></span></div>
+<div class="ticker"><span id="tickerText">No active cells</span></div>
 
+<script src="/socket.io/socket.io.js"></script>
 <script>
-  const grid = document.getElementById('grid');
-  const departmentSelect = document.getElementById('departmentSelect');
-  const deptTitle = document.getElementById('deptTitle');
-  const menuBtn = document.getElementById('menuBtn');
-  const menuContent = document.getElementById('menuContent');
-  const addDeptBtn = document.getElementById('addDept');
-  const renameDeptBtn = document.getElementById('renameDept');
-  const renameCellBtn = document.getElementById('renameCell');
-  const resetAllBtn = document.getElementById('resetAll');
-  const tickerText = document.getElementById('tickerText');
-  const prevPage = document.getElementById('prevPage');
-  const nextPage = document.getElementById('nextPage');
-  const pageInfo = document.getElementById('pageInfo');
+const socket = io();
 
-  const CELLS_PER_PAGE = 10;
-  let currentPage = 1;
-  let selectedCell = null;
+let state = { departments: {} };
+let currentDept = null;
+let currentPage = 1;
+const PER_PAGE = 10;
+let selectedCell = null;
 
-  let departments = JSON.parse(localStorage.getItem('departments') || '{}');
+const grid = document.getElementById('grid');
+const deptSelect = document.getElementById('deptSelect');
+const deptTitle = document.getElementById('deptTitle');
+const pageInfo = document.getElementById('pageInfo');
+const tickerText = document.getElementById('tickerText');
 
-  function save() { localStorage.setItem('departments', JSON.stringify(departments)); }
+socket.on('state:init', s => {
+  state = s;
+  if (!currentDept) currentDept = Object.keys(state.departments)[0];
+  renderDepartments();
+  render();
+});
 
-  function refreshDeptSelect() {
-    departmentSelect.innerHTML = '<option value="">Select Department</option>';
-    Object.keys(departments).forEach(d => {
-      const o = document.createElement('option');
-      o.value = d; o.textContent = d; departmentSelect.appendChild(o);
-    });
-  }
+function sync() {
+  socket.emit('state:update', state);
+}
 
-  function buildCells(dept) {
-    departments[dept] = [];
-    for (let i = 1; i <= 100; i++) {
-      departments[dept].push({ name: String(i), active: false });
-    }
-  }
+function renderDepartments() {
+  deptSelect.innerHTML = '';
+  Object.keys(state.departments).forEach(d => {
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    deptSelect.appendChild(o);
+  });
+  deptSelect.value = currentDept;
+  deptTitle.textContent = currentDept;
+}
 
-  function getCells() {
-    return departments[departmentSelect.value] || [];
-  }
+deptSelect.onchange = e => {
+  currentDept = e.target.value;
+  currentPage = 1;
+  render();
+};
 
-  function renderPage() {
-    grid.innerHTML = '';
-    const cells = getCells();
-    const start = (currentPage - 1) * CELLS_PER_PAGE;
-    const end = start + CELLS_PER_PAGE;
-
-    cells.slice(start, end).forEach(cell => {
-      const el = document.createElement('div');
-      el.className = 'cell' + (cell.active ? ' active' : '');
-      el.textContent = cell.name;
-      el.onclick = () => {
-        cell.active = !cell.active;
-        save();
-        renderPage();
-        updateTicker();
-      };
-      grid.appendChild(el);
-    });
-
-    pageInfo.textContent = cells.length ? `Page ${currentPage} / ${Math.ceil(cells.length / CELLS_PER_PAGE)}` : '';
-  }
-
-  function updateTicker() {
-    const list = [];
-    Object.entries(departments).forEach(([dept, cells]) => {
-      cells.filter(c => c.active).forEach(c => list.push(`${dept}: ${c.name}`));
-    });
-    tickerText.textContent = list.length ? list.join('  •  ') : 'No active cells';
-  }
-
-  addDeptBtn.onclick = () => {
-    const name = prompt('Department name');
-    if (!name || departments[name]) return;
-    buildCells(name);
-    save();
-    refreshDeptSelect();
-  };
-
-  renameDeptBtn.onclick = () => {
-    const oldName = departmentSelect.value;
-    if (!oldName) return alert('Select department');
-    const newName = prompt('New department name', oldName);
-    if (!newName || departments[newName]) return;
-    departments[newName] = departments[oldName];
-    delete departments[oldName];
-    save();
-    refreshDeptSelect();
-    departmentSelect.value = newName;
-    deptTitle.textContent = newName;
-    updateTicker();
-  };
-
-  renameCellBtn.onclick = () => {
-    const idx = (currentPage - 1) * CELLS_PER_PAGE;
-    const cells = getCells();
-    if (!cells[idx]) return alert('Select a cell first');
-    const name = prompt('New cell name', cells[idx].name);
-    if (name) { cells[idx].name = name; save(); renderPage(); updateTicker(); }
-  };
-
-  resetAllBtn.onclick = () => {
-    Object.values(departments).flat().forEach(c => c.active = false);
-    save(); renderPage(); updateTicker(); menuContent.style.display = 'none';
-  };
-
-  departmentSelect.onchange = () => {
-    currentPage = 1;
-    deptTitle.textContent = departmentSelect.value || 'Select Department';
-    renderPage();
-  };
-
-  prevPage.onclick = () => { if (currentPage > 1) { currentPage--; renderPage(); } };
-  nextPage.onclick = () => {
-    if (currentPage < Math.ceil(getCells().length / CELLS_PER_PAGE)) {
-      currentPage++; renderPage();
-    }
-  };
-
-  menuBtn.onclick = e => { e.stopPropagation(); menuContent.style.display = menuContent.style.display === 'block' ? 'none' : 'block'; };
-  document.addEventListener('click', () => menuContent.style.display = 'none');
-
-  refreshDeptSelect();
+function render() {
+  const cells = state.departments[currentDept];
+  grid.innerHTML = '';
+  const slice = cells.slice((currentPage-1)*PER_PAGE, currentPage*PER_PAGE);
+  slice.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'cell' + (c.active ? ' active' : '');
+    div.textContent = c.name;
+    div.onclick = () => {
+      c.active = !c.active;
+      sync();
+    };
+    div.oncontextmenu = e => {
+      e.preventDefault();
+      selectedCell = c;
+    };
+    grid.appendChild(div);
+  });
+  pageInfo.textContent = `Page ${currentPage}`;
   updateTicker();
+}
+
+function updateTicker() {
+  const list = [];
+  Object.entries(state.departments).forEach(([d, cells]) => {
+    cells.filter(c => c.active).forEach(c => list.push(`${d}:${c.name}`));
+  });
+  tickerText.textContent = list.length ? list.join(' • ') : 'No active cells';
+}
+
+prev.onclick = () => { if (currentPage>1) { currentPage--; render(); }};
+next.onclick = () => { currentPage++; render(); };
+
+menuBtn.onclick = () => menuContent.style.display = menuContent.style.display==='block'?'none':'block';
+
+addDept.onclick = () => {
+  const n = prompt('Department name');
+  if (!n) return;
+  state.departments[n] = Array.from({length:100},(_,i)=>({name:String(i+1),active:false}));
+  currentDept = n;
+  sync();
+};
+
+renameDept.onclick = () => {
+  const n = prompt('New name', currentDept);
+  if (!n) return;
+  state.departments[n] = state.departments[currentDept];
+  delete state.departments[currentDept];
+  currentDept = n;
+  sync();
+};
+
+renameCell.onclick = () => {
+  if (!selectedCell) return alert('Long-press cell first');
+  const n = prompt('Cell name', selectedCell.name);
+  if (n) selectedCell.name = n;
+  sync();
+};
+
+resetAll.onclick = () => {
+  Object.values(state.departments).forEach(cells => cells.forEach(c => c.active=false));
+  sync();
+};
+
+// init default
+socket.emit('state:update', {
+  departments: { Default: Array.from({length:100},(_,i)=>({name:String(i+1),active:false})) }
+});
 </script>
 </body>
 </html>
