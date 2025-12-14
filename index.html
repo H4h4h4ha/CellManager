@@ -204,7 +204,9 @@ function render() {
     div.className = 'cell' + (c.active ? ' active' : '');
     div.textContent = c.name;
     div.onclick = () => {
+      // Toggle locally FIRST so UI updates immediately
       c.active = !c.active;
+      render();
       sync();
     };
     div.oncontextmenu = e => {
