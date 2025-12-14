@@ -56,7 +56,19 @@ button{background:#00aa00;color:#000;border:none;padding:10px 18px;border-radius
 </div>
 <div class="ticker"><span id="tickerText">No active cells</span></div>
 
-<script src="/socket.io/socket.io.js"></script>
+<script src="/socket.io/socket.io.js">// CLOSE MENU WHEN TAPPING ANYWHERE ELSE (MOBILE FIX)
+document.addEventListener('touchstart', (e) => {
+  if (!menuContent.contains(e.target) && !menuBtn.contains(e.target)) {
+    menuContent.style.display = 'none';
+  }
+}, { passive: true });
+
+document.addEventListener('click', (e) => {
+  if (!menuContent.contains(e.target) && !menuBtn.contains(e.target)) {
+    menuContent.style.display = 'none';
+  }
+});
+</script>
 <script>
 const socket = io();
 
@@ -81,7 +93,12 @@ const renameCell = document.getElementById('renameCell');
 const workingCell = document.getElementById('workingCell');
 const resetAll = document.getElementById('resetAll');
 
-menuBtn.onclick = () => {
+function closeMenu(){
+  menuContent.style.display = 'none';
+}
+
+menuBtn.onclick = (e) => {
+  e.stopPropagation();
   menuContent.style.display = 'block';
 };
 
@@ -165,6 +182,7 @@ prev.onclick=()=>{if(currentPage>1){currentPage--;render()}};
 next.onclick=()=>{currentPage++;render()};
 
 addDept.onclick=()=>{
+  closeMenu();
   const n=prompt('Department name');
   if(!n)return;
   state.departments[n]=Array.from({length:100},(_,i)=>({name:String(i+1),active:false,working:false}));
@@ -172,6 +190,7 @@ addDept.onclick=()=>{
 };
 
 renameDept.onclick=()=>{
+  closeMenu();
   const n=prompt('New name',currentDept);
   if(!n)return;
   state.departments[n]=state.departments[currentDept];
@@ -180,16 +199,15 @@ renameDept.onclick=()=>{
 };
 
 renameCell.onclick=()=>{
+  closeMenu();
   if(!selectedCell)return alert('Long-press cell first');
   const n=prompt('Cell name',selectedCell.name);
   if(n){selectedCell.name=n;render();sync()}
 };
 
 workingCell.onclick=()=>{
+  closeMenu();
   if(!selectedCell) return alert('Long-press cell first');
-
-  // hide menu after action
-  menuContent.style.display='none';
 
   // if already working → mark done with animation
   if(selectedCell.working){
@@ -215,6 +233,7 @@ workingCell.onclick=()=>{
 };
 
 resetAll.onclick=()=>{
+  closeMenu();
   Object.values(state.departments).forEach(cells=>cells.forEach(c=>{c.active=false;c.working=false}));
   render();sync();
 };
