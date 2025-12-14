@@ -9,7 +9,7 @@ body{margin:0;font-family:Arial,sans-serif;background:#1c1c1c;color:#fff}
 header{position:sticky;top:0;background:#111;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:10}
 .menu{position:relative}
 .menu-btn{background:none;border:none;color:#fff;font-size:22px}
-.menu-content{display:none;position:absolute;right:0;top:30px;background:#2a2a2a;border-radius:6px;min-width:180px}
+.menu-content{display:none;position:absolute;right:0;top:30px;background:#2a2a2a;border-radius:6px;min-width:200px}
 .menu-content button{width:100%;padding:10px;background:none;border:none;color:#fff;text-align:left}
 .menu-content button:hover{background:#3a3a3a}
 select{background:#2a2a2a;color:#fff;border:none;padding:6px;border-radius:4px}
@@ -20,6 +20,8 @@ select{background:#2a2a2a;color:#fff;border:none;padding:6px;border-radius:4px}
 background:#3a5f3a;border-radius:10px;padding:28px 0;text-align:center;font-size:22px}
 .cell.active{background:red;animation:blink 1s infinite}
 .cell.working{background:yellow;color:#000}
+.cell.transition{animation:workDone 2s linear}
+@keyframes workDone{0%{background:blue}25%{background:green}50%{background:blue}75%{background:green}100%{background:#3a5f3a}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .pagination{display:flex;justify-content:center;gap:12px;padding-bottom:70px}
 button{background:#00aa00;color:#000;border:none;padding:10px 18px;border-radius:20px}
@@ -80,7 +82,7 @@ const workingCell = document.getElementById('workingCell');
 const resetAll = document.getElementById('resetAll');
 
 menuBtn.onclick = () => {
-  menuContent.style.display = menuContent.style.display === 'block' ? 'none' : 'block';
+  menuContent.style.display = 'block';
 };
 
 socket.on('state:init', s => {
@@ -111,7 +113,10 @@ function render(){
   const slice=cells.slice((currentPage-1)*PER_PAGE,currentPage*PER_PAGE);
   slice.forEach(c=>{
     const div=document.createElement('div');
-    div.className='cell'+(c.active?' active':'')+(c.working?' working':'');
+    div.className='cell'
+  +(c.active?' active':'')
+  +(c.working?' working':'')
+  +(c.transition?' transition':'');
     div.textContent=c.name;
 
     // tap = toggle active
@@ -181,10 +186,32 @@ renameCell.onclick=()=>{
 };
 
 workingCell.onclick=()=>{
-  if(!selectedCell)return alert('Long-press cell first');
-  selectedCell.working=!selectedCell.working;
-  if(selectedCell.working)selectedCell.active=false;
-  render();sync();
+  if(!selectedCell) return alert('Long-press cell first');
+
+  // hide menu after action
+  menuContent.style.display='none';
+
+  // if already working → mark done with animation
+  if(selectedCell.working){
+    selectedCell.working=false;
+    selectedCell.active=false;
+    selectedCell.transition=true;
+
+    render();
+
+    setTimeout(()=>{
+      selectedCell.transition=false;
+      render();
+      sync();
+    },2000);
+    return;
+  }
+
+  // set working
+  selectedCell.working=true;
+  selectedCell.active=false;
+  render();
+  sync();
 };
 
 resetAll.onclick=()=>{
