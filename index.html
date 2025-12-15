@@ -6,151 +6,32 @@
 <title>Shared Cell Manager</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #1c1c1c;
-  color: #fff;
-}
-
-header {
-  position: sticky;
-  top: 0;
-  background: #111;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 10;
-}
-
+body { margin: 0; font-family: Arial, sans-serif; background: #1c1c1c; color: #fff; }
+header { position: sticky; top: 0; background: #111; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
 .menu { position: relative; }
-.menu-btn {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 22px;
-}
-
-.menu-content {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 30px;
-  background: #2a2a2a;
-  border-radius: 6px;
-  min-width: 200px;
-}
-
-.menu-content button {
-  width: 100%;
-  padding: 10px;
-  background: none;
-  border: none;
-  color: #fff;
-  text-align: left;
-}
-
-.menu-content button:hover {
-  background: #3a3a3a;
-}
-
-select {
-  background: #2a2a2a;
-  color: #fff;
-  border: none;
-  padding: 6px;
-  border-radius: 4px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  padding: 16px;
-}
-
-.cell {
-  background: #3a5f3a;
-  border-radius: 10px;
-  padding: 28px 0;
-  text-align: center;
-  font-size: 22px;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-}
-
-.cell.active {
-  background: red;
-  animation: blink 1s infinite;
-}
-
-.cell.working {
-  background: yellow;
-  color: #000;
-}
-
-.cell.transition {
-  animation: workDone 2s linear;
-}
-
-@keyframes workDone {
-  0%   { background: blue; }
-  20%  { background: green; }
-  40%  { background: blue; }
-  60%  { background: green; }
-  80%  { background: #3a5f3a; }
-  100% { background: #3a5f3a; }
-}
-
-@keyframes blink {
-  0%,100% { opacity: 1; }
-  50% { opacity: .3; }
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding-bottom: 70px;
-}
-
-button {
-  background: #00aa00;
-  color: #000;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 20px;
-}
-
-.ticker {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: #000;
-  color: #0f0;
-  overflow: hidden;
-  white-space: nowrap;
-  padding: 10px 0;
-  font-size: 18px;
-}
-
-.ticker span {
-  display: inline-block;
-  padding-left: 100%;
-  animation: scroll 15s linear infinite;
-}
-
-@keyframes scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
-}
+.menu-btn { background: none; border: none; color: #fff; font-size: 22px; }
+.menu-content { display: none; position: absolute; right: 0; top: 30px; background: #2a2a2a; border-radius: 6px; min-width: 200px; }
+.menu-content button { width: 100%; padding: 10px; background: none; border: none; color: #fff; text-align: left; }
+.menu-content button:hover { background: #3a3a3a; }
+select { background: #2a2a2a; color: #fff; border: none; padding: 6px; border-radius: 4px; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 16px; }
+.cell { background: #3a5f3a; border-radius: 10px; padding: 28px 0; text-align: center; font-size: 22px; user-select: none; -webkit-user-select: none; }
+.cell.active { background: red; animation: blink 1s infinite; }
+.cell.working { background: yellow; color: #000; }
+.cell.transition { animation: workDone 2s linear; }
+@keyframes workDone { 0%{background:blue;}20%{background:green;}40%{background:blue;}60%{background:green;}80%,100%{background:#3a5f3a;} }
+@keyframes blink { 0%,100%{opacity:1;}50%{opacity:.3;} }
+.pagination { display: flex; justify-content: center; gap: 12px; padding-bottom: 90px; }
+button { background: #00aa00; color: #000; border: none; padding: 10px 18px; border-radius: 20px; }
+.ticker { position: fixed; bottom: 0; width: 100%; background: #000; color: #0f0; overflow: hidden; white-space: nowrap; padding: 10px 0; font-size: 18px; }
+.ticker span { display: inline-block; padding-left: 100%; animation: scroll 15s linear infinite; }
+@keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+#countdown { position: fixed; bottom: 45px; width: 100%; text-align: center; font-size: 18px; color: #0ff; display: none; }
+#logPage { display:none; padding:16px; }
+#logPage ul { list-style:none; padding:0; }
 </style>
 </head>
-
 <body>
-
 <header>
   <div id="deptTitle">Department</div>
   <div>
@@ -162,6 +43,7 @@ button {
         <button id="renameDept">Rename Department</button>
         <button id="renameCell">Rename Cell</button>
         <button id="workingCell">Working on Cell</button>
+        <button id="viewLogs">View Logs</button>
         <button id="resetAll">Reset All</button>
       </div>
     </span>
@@ -176,248 +58,57 @@ button {
   <button id="next">Next</button>
 </div>
 
-<div class="ticker">
-  <span id="tickerText">No active cells</span>
+<div id="countdown"></div>
+<div class="ticker"><span id="tickerText">No active cells</span></div>
+
+<div id="logPage">
+  <h2>Downtime Log</h2>
+  <ul id="logList"></ul>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
-
 <script>
 const socket = io();
+let state = { departments:{}, logs:[] };
+let currentDept=null, currentPage=1, selectedCell=null;
+const PER_PAGE=10;
+const grid=document.getElementById('grid');
+const deptSelect=document.getElementById('deptSelect');
+const deptTitle=document.getElementById('deptTitle');
+const pageInfo=document.getElementById('pageInfo');
+const tickerText=document.getElementById('tickerText');
+const menuBtn=document.getElementById('menuBtn');
+const menuContent=document.getElementById('menuContent');
+const countdown=document.getElementById('countdown');
+const logPage=document.getElementById('logPage');
+const logList=document.getElementById('logList');
 
-let state = { departments: {} };
-let currentDept = null;
-let currentPage = 1;
-const PER_PAGE = 10;
-let selectedCell = null;
+function closeMenu(){ menuContent.style.display='none'; }
+menuBtn.onclick=e=>{e.stopPropagation();menuContent.style.display='block';};
+document.addEventListener('click',e=>{if(!menuContent.contains(e.target)&&!menuBtn.contains(e.target))closeMenu();});
 
-const grid = document.getElementById('grid');
-const deptSelect = document.getElementById('deptSelect');
-const deptTitle = document.getElementById('deptTitle');
-const pageInfo = document.getElementById('pageInfo');
-const prev = document.getElementById('prev');
-const next = document.getElementById('next');
-const tickerText = document.getElementById('tickerText');
-const menuBtn = document.getElementById('menuBtn');
-const menuContent = document.getElementById('menuContent');
+socket.on('state:init',s=>{state=s;currentDept=currentDept||Object.keys(state.departments)[0];renderDepartments();render();});
+function sync(){ socket.emit('state:update',state); }
 
-const addDept = document.getElementById('addDept');
-const renameDept = document.getElementById('renameDept');
-const renameCell = document.getElementById('renameCell');
-const workingCell = document.getElementById('workingCell');
-const resetAll = document.getElementById('resetAll');
+function renderDepartments(){ deptSelect.innerHTML='';Object.keys(state.departments).forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;deptSelect.appendChild(o);});deptSelect.value=currentDept;deptTitle.textContent=currentDept; }
 
-function closeMenu() {
-  menuContent.style.display = 'none';
-}
+deptSelect.onchange=e=>{currentDept=e.target.value;currentPage=1;render();};
 
-menuBtn.onclick = e => {
-  e.stopPropagation();
-  menuContent.style.display = 'block';
-};
+function render(){ const cells=state.departments[currentDept]||[];grid.innerHTML='';cells.slice((currentPage-1)*PER_PAGE,currentPage*PER_PAGE).forEach(c=>{const d=document.createElement('div');d.className='cell'+(c.active?' active':'')+(c.working?' working':'')+(c.transition?' transition':'');d.textContent=c.name;d.onclick=()=>{c.active=!c.active;if(c.active)c.working=false;render();sync();};let t;d.addEventListener('touchstart',()=>{t=setTimeout(()=>{selectedCell=c;menuContent.style.display='block';},600);});d.addEventListener('touchend',()=>{clearTimeout(t);});grid.appendChild(d);});pageInfo.textContent=`Page ${currentPage}`;updateTicker(); }
 
-document.addEventListener('click', e => {
-  if (!menuContent.contains(e.target) && !menuBtn.contains(e.target)) {
-    closeMenu();
-  }
-});
+function updateTicker(){ const list=[];Object.entries(state.departments).forEach(([d,cells])=>cells.filter(c=>c.active||c.working).forEach(c=>list.push(`${d}:${c.name}`)));tickerText.textContent=list.length?list.join(' • '):'No active cells'; }
 
-document.addEventListener('touchstart', e => {
-  if (!menuContent.contains(e.target) && !menuBtn.contains(e.target)) {
-    closeMenu();
-  }
-}, { passive: true });
+function startCountdown(sec){ countdown.style.display='block';let r=sec;countdown.textContent=`Resetting in ${r}s`;const i=setInterval(()=>{r--;countdown.textContent=`Resetting in ${r}s`;if(r<=0){clearInterval(i);countdown.style.display='none';}},1000); }
 
-socket.on('state:init', s => {
-  state = s;
-  if (!currentDept) currentDept = Object.keys(state.departments)[0];
-  renderDepartments();
-  render();
-});
+function renderLogs(){ logList.innerHTML='';state.logs.forEach(l=>{const li=document.createElement('li');li.textContent=`${l.cell} (${l.dept}) – ${Math.round(l.duration/1000)}s`;logList.appendChild(li);}); }
 
-function sync() {
-  socket.emit('state:update', state);
-}
+document.getElementById('workingCell').onclick=()=>{closeMenu();if(!selectedCell)return; if(selectedCell.working){ const down=selectedCell.downAt; startCountdown(10); setTimeout(()=>{ const up=Date.now(); state.logs.push({dept:currentDept,cell:selectedCell.name,downAt:down,upAt:up,duration:up-down}); selectedCell.transition=true; selectedCell.working=false; render(); setTimeout(()=>{selectedCell.transition=false;render();sync();},2000); },10000); return;} selectedCell.working=true; selectedCell.downAt=Date.now(); selectedCell.active=false; render(); sync(); };
 
-function renderDepartments() {
-  deptSelect.innerHTML = '';
-  Object.keys(state.departments).forEach(d => {
-    const o = document.createElement('option');
-    o.value = d;
-    o.textContent = d;
-    deptSelect.appendChild(o);
-  });
-  deptSelect.value = currentDept;
-  deptTitle.textContent = currentDept;
-}
+document.getElementById('viewLogs').onclick=()=>{closeMenu();logPage.style.display='block';renderLogs();};
 
-deptSelect.onchange = e => {
-  currentDept = e.target.value;
-  currentPage = 1;
-  render();
-};
+document.getElementById('resetAll').onclick=()=>{closeMenu();Object.values(state.departments).forEach(cs=>cs.forEach(c=>{c.active=false;c.working=false;c.transition=false;}));render();sync();};
 
-function render() {
-  const cells = state.departments[currentDept] || [];
-  grid.innerHTML = '';
-
-  const slice = cells.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
-
-  slice.forEach(c => {
-    const div = document.createElement('div');
-    div.className =
-      'cell' +
-      (c.active ? ' active' : '') +
-      (c.working ? ' working' : '') +
-      (c.transition ? ' transition' : '');
-
-    div.textContent = c.name;
-
-    let pressTimer;
-    let longPress = false;
-
-    div.addEventListener('touchstart', () => {
-      longPress = false;
-      pressTimer = setTimeout(() => {
-        longPress = true;
-        selectedCell = c;
-        menuContent.style.display = 'block';
-      }, 600);
-    });
-
-    div.addEventListener('touchend', () => {
-      clearTimeout(pressTimer);
-      if (!longPress) {
-        c.active = !c.active;
-        if (c.active) c.working = false;
-        render();
-        sync();
-      }
-    });
-
-    div.addEventListener('touchmove', () => clearTimeout(pressTimer));
-
-    div.onclick = () => {
-      c.active = !c.active;
-      if (c.active) c.working = false;
-      render();
-      sync();
-    };
-
-    div.oncontextmenu = e => {
-      e.preventDefault();
-      selectedCell = c;
-      menuContent.style.display = 'block';
-    };
-
-    grid.appendChild(div);
-  });
-
-  pageInfo.textContent = `Page ${currentPage}`;
-  updateTicker();
-}
-
-function updateTicker() {
-  const list = [];
-  Object.entries(state.departments).forEach(([d, cells]) => {
-    cells.filter(c => c.active || c.working).forEach(c => {
-      list.push(`${d}:${c.name} ${c.active ? '(RED)' : '(WORKING)'}`);
-    });
-  });
-  tickerText.textContent = list.length ? list.join(' • ') : 'No active cells';
-}
-
-prev.onclick = () => { if (currentPage > 1) { currentPage--; render(); } };
-next.onclick = () => { currentPage++; render(); };
-
-addDept.onclick = () => {
-  closeMenu();
-  const n = prompt('Department name');
-  if (!n) return;
-  state.departments[n] = Array.from({ length: 100 }, (_, i) => ({
-    name: String(i + 1),
-    active: false,
-    working: false,
-    transition: false
-  }));
-  currentDept = n;
-  renderDepartments();
-  render();
-  sync();
-};
-
-renameDept.onclick = () => {
-  closeMenu();
-  const n = prompt('New name', currentDept);
-  if (!n) return;
-  state.departments[n] = state.departments[currentDept];
-  delete state.departments[currentDept];
-  currentDept = n;
-  renderDepartments();
-  render();
-  sync();
-};
-
-renameCell.onclick = () => {
-  closeMenu();
-  if (!selectedCell) return alert('Long-press cell first');
-  const n = prompt('Cell name', selectedCell.name);
-  if (n) {
-    selectedCell.name = n;
-    render();
-    sync();
-  }
-};
-
-workingCell.onclick = () => {
-  closeMenu();
-  if (!selectedCell) return alert('Long-press cell first');
-
-  if (selectedCell.working) {
-    selectedCell.working = false;
-    selectedCell.active = false;
-    selectedCell.transition = true;
-
-    render();
-
-    setTimeout(() => {
-      selectedCell.transition = false;
-      render();
-      sync();
-    }, 2000);
-    return;
-  }
-
-  selectedCell.working = true;
-  selectedCell.active = false;
-  render();
-  sync();
-};
-
-resetAll.onclick = () => {
-  closeMenu();
-  Object.values(state.departments).forEach(cells =>
-    cells.forEach(c => {
-      c.active = false;
-      c.working = false;
-      c.transition = false;
-    })
-  );
-  render();
-  sync();
-};
-
-socket.emit('state:update', {
-  departments: {
-    Default: Array.from({ length: 100 }, (_, i) => ({
-      name: String(i + 1),
-      active: false,
-      working: false,
-      transition: false
-    }))
-  }
-});
+socket.emit('state:update',{departments:{Default:Array.from({length:100},(_,i)=>({name:String(i+1),active:false,working:false,transition:false}))},logs:[]});
 </script>
-
 </body>
 </html>
