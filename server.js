@@ -9,7 +9,17 @@ const io = new Server(server);
 
 const PORT = process.env.PORT || 3000;
 
-let state = { departments: {} };
+/* 🔐 SHARED SERVER MEMORY (SOURCE OF TRUTH) */
+let sharedState = {
+  departments: {
+    Default: Array.from({ length: 100 }, (_, i) => ({
+      name: String(i + 1),
+      active: false,
+      working: false,
+      transition: false
+    }))
+  }
+};
 
 app.use(express.static(__dirname));
 
@@ -18,14 +28,22 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", socket => {
-  socket.emit("state:init", state);
+  console.log("User connected");
 
+  // Send current state to new user
+  socket.emit("state:init", sharedState);
+
+  // Receive updates from any user
   socket.on("state:update", newState => {
-    state = newState;
-    socket.broadcast.emit("state:init", state);
+    sharedState = newState;
+    socket.broadcast.emit("state:init", sharedState);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected");
   });
 });
 
 server.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+  console.log(`Server running on port ${PORT}`);
 });
