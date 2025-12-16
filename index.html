@@ -254,7 +254,6 @@ function renderDepartments() {
 deptSelect.onchange = e => {
   currentDept = e.target.value;
   currentPage = 1;
-  deptTitle.textContent = currentDept;
   render();
 };
 
@@ -274,24 +273,36 @@ function render() {
 
     div.textContent = c.name;
 
+    let pressTimer;
+    let longPress = false;
+
+    div.addEventListener('touchstart', () => {
+      longPress = false;
+      pressTimer = setTimeout(() => {
+        longPress = true;
+        selectedCell = c;
+        menuContent.style.display = 'block';
+      }, 600);
+    });
+
+    div.addEventListener('touchend', () => {
+      clearTimeout(pressTimer);
+      if (!longPress) {
+        c.active = !c.active;
+        if (c.active) c.working = false;
+        render();
+        sync();
+      }
+    });
+
+    div.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
     div.onclick = () => {
       c.active = !c.active;
       if (c.active) c.working = false;
       render();
       sync();
     };
-
-    let pressTimer;
-    div.addEventListener('touchstart', e => {
-      e.preventDefault();
-      pressTimer = setTimeout(() => {
-        selectedCell = c;
-        menuContent.style.display = 'block';
-      }, 600);
-    }, { passive: false });
-
-    div.addEventListener('touchend', () => clearTimeout(pressTimer));
-    div.addEventListener('touchmove', () => clearTimeout(pressTimer));
 
     div.oncontextmenu = e => {
       e.preventDefault();
